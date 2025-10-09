@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>活動簽到 - <%= event.title %></title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <div class="container mt-5">
+    <div class="row justify-content-center">
+      <div class="col-md-8">
+        <div class="card shadow">
+          <div class="card-header bg-primary text-white">
+            <h2 class="card-title mb-0">活動簽到</h2>
+          </div>
+          <div class="card-body">
+            <h3 class="mb-3"><%= event.title %></h3>
+            <p class="text-muted"><%= event.description %></p>
+            
+            <!-- 簽到警語 -->
+            <div class="alert alert-warning alert-dismissible fade show" role="alert">
+              <i class="bi bi-exclamation-triangle-fill me-2"></i>
+              <strong>重要提醒：</strong> 請確保您輸入的個人資料正確無誤，所有資料將用於活動簽到統計用途。
+              <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            
+            <form id="checkinForm" action="/checkin/<%= event.qr_code_id %>" method="POST" class="mt-4">
+              <div class="mb-3">
+                <label for="name" class="form-label fw-bold">姓名</label>
+                <input type="text" class="form-control" id="name" name="name" required>
+              </div>
+              <div class="mb-3">
+                <label for="organization" class="form-label">機關</label>
+                <input type="text" class="form-control" id="organization" name="organization" required>
+              </div>
+              <div class="mb-3">
+                <label for="department" class="form-label">單位</label>
+                <input type="text" class="form-control" id="department" name="department" required>
+              </div>
+              <div class="mb-3">
+                <label for="position" class="form-label">職稱</label>
+                <input type="text" class="form-control" id="position" name="position" required>
+              </div>
+              <div class="mb-3">
+                <label for="id_number" class="form-label">身分證字號</label>
+                <input type="text" class="form-control" id="id_number" name="id_number" required>
+              </div>
+              <div class="mb-3">
+                <label for="birth_date" class="form-label">出生年月日</label>
+                <input type="date" class="form-control" id="birth_date" name="birth_date" required>
+              </div>
+              <div class="mb-3">
+                <label for="email" class="form-label">電子郵件</label>
+                <input type="email" class="form-control" id="email" name="email" required>
+              </div>
+              <div class="mb-3 form-check">
+                <input type="checkbox" class="form-check-input" id="saveInfo" checked>
+                <label class="form-check-label" for="saveInfo">記住我的資料</label>
+              </div>
+              <div class="d-flex justify-content-between">
+                <div>
+                  <button type="submit" class="btn btn-primary me-2">確認簽到</button>
+                  <button type="button" id="leaveButton" class="btn btn-outline-danger">
+                    <i class="bi bi-box-arrow-right"></i> 不簽到離開
+                  </button>
+                </div>
+                <button type="button" id="clearData" class="btn btn-outline-secondary btn-sm">
+                  <i class="bi bi-trash"></i> 清除已儲存資料
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    // 頁面加載時自動填充表單
+    document.addEventListener('DOMContentLoaded', function() {
+      const nameInput = document.getElementById('name');
+      const emailInput = document.getElementById('email');
+      const saveInfoCheckbox = document.getElementById('saveInfo');
+      const clearDataButton = document.getElementById('clearData');
+      const form = document.getElementById('checkinForm');
+      
+      // 從localStorage讀取用戶資料
+      const savedName = localStorage.getItem('checkin_name');
+      const savedEmail = localStorage.getItem('checkin_email');
+      const savedOrganization = localStorage.getItem('checkin_organization');
+      const savedDepartment = localStorage.getItem('checkin_department');
+      const savedPosition = localStorage.getItem('checkin_position');
+      const savedIdNumber = localStorage.getItem('checkin_id_number');
+      const savedBirthDate = localStorage.getItem('checkin_birth_date');
+      
+      // 獲取新增的欄位元素
+      const organizationInput = document.getElementById('organization');
+      const departmentInput = document.getElementById('department');
+      const positionInput = document.getElementById('position');
+      const idNumberInput = document.getElementById('id_number');
+      const birthDateInput = document.getElementById('birth_date');
+      
+      // 如果有保存的資料，自動填充表單
+      if (savedName) {
+        nameInput.value = savedName;
+      }
+      
+      if (savedEmail) {
+        emailInput.value = savedEmail;
+      }
+      
+      if (savedOrganization) {
+        organizationInput.value = savedOrganization;
+      }
+      
+      if (savedDepartment) {
+        departmentInput.value = savedDepartment;
+      }
+      
+      if (savedPosition) {
+        positionInput.value = savedPosition;
+      }
+      
+      if (savedIdNumber) {
+        idNumberInput.value = savedIdNumber;
+      }
+      
+      if (savedBirthDate) {
+        birthDateInput.value = savedBirthDate;
+      }
+      
+      // 表單提交時保存用戶資料
+      form.addEventListener('submit', function() {
+        if (saveInfoCheckbox.checked) {
+          localStorage.setItem('checkin_name', nameInput.value);
+          localStorage.setItem('checkin_email', emailInput.value);
+          localStorage.setItem('checkin_organization', organizationInput.value);
+          localStorage.setItem('checkin_department', departmentInput.value);
+          localStorage.setItem('checkin_position', positionInput.value);
+          localStorage.setItem('checkin_id_number', idNumberInput.value);
+          localStorage.setItem('checkin_birth_date', birthDateInput.value);
+        }
+      });
+      
+      // 清除按鈕點擊事件
+      clearDataButton.addEventListener('click', function() {
+        localStorage.removeItem('checkin_name');
+        localStorage.removeItem('checkin_email');
+        localStorage.removeItem('checkin_organization');
+        localStorage.removeItem('checkin_department');
+        localStorage.removeItem('checkin_position');
+        localStorage.removeItem('checkin_id_number');
+        localStorage.removeItem('checkin_birth_date');
+        nameInput.value = '';
+        emailInput.value = '';
+        organizationInput.value = '';
+        departmentInput.value = '';
+        positionInput.value = '';
+        idNumberInput.value = '';
+        birthDateInput.value = '';
+        alert('已清除儲存的資料');
+      });
+      
+      // 不簽到離開按鈕點擊事件
+      document.getElementById('leaveButton').addEventListener('click', function() {
+        if (confirm('確定要不簽到直接離開嗎？')) {
+          // 顯示提醒訊息後關閉頁面
+          alert('頁面即將關閉!');
+          
+          // 嘗試關閉視窗
+          window.close();
+          
+          // 如果無法關閉（某些瀏覽器限制），嘗試其他方法
+          setTimeout(function() {
+            // 嘗試開啟空白頁面後關閉
+            window.open('', '_self').close();
+            
+            // 如果還是無法關閉，導向到空白頁面
+            setTimeout(function() {
+              window.location.href = 'about:blank';
+            }, 100);
+          }, 100);
+        }
+      });
+      
+      // 如果沒有保存的資料，隱藏清除按鈕
+      if (!savedName && !savedEmail && !savedOrganization && !savedDepartment && !savedPosition) {
+        clearDataButton.style.display = 'none';
+      }
+    });
+  </script>
+</body>
+</html>
