@@ -1,0 +1,55 @@
+🚀 QR Check-in System - Upload Ready Package
+===========================================
+
+📦 文件內容說明：
+├── README.md              # 系統說明文件
+├── app.js                 # 主應用程序
+├── package.json           # 依賴包配置
+├── package-lock.json      # 依賴包鎖定文件
+├── vercel.json            # Vercel 部署配置
+├── public/                # 靜態資源文件夾
+│   ├── css/style.css     # 樣式表
+│   └── index.html        # 靜態頁面
+└── views/                # 模板文件夾
+    ├── *.ejs             # 各種頁面模板
+
+🎯 上傳步驟：
+
+1. 📤 上傳到 Vercel
+   - 訪問 https://vercel.com
+   - 點擊 "New Project"
+   - 拖放整個 upload-ready 文件夾
+   - 或點擊 "Import" 選擇文件夾
+
+2. ⚙️ 配置環境變量（重要！）
+   在 Vercel 項目設置中添加：
+   - SECRET_KEY: 32位十六進制密鑰（用於會話加密）
+   - NODE_ENV: production
+   - SESSION_SECRET: 32位十六進制密鑰（用於Express會話）
+   
+   🔑 生成密鑰示例：
+   SECRET_KEY: c73e4b2a679754ee715fd4a95f44939e249d747e4d8643bada1d12e1ec281adb
+   SESSION_SECRET: cad9ad1a53b97811df624a97852bed7f
+
+3. 🚀 部署
+   - 點擊 "Deploy" 按鈕
+   - 等待部署完成
+
+📋 驗證檢查：
+- ✅ 所有文件都存在
+- ✅ JSON 文件格式正確
+- ✅ 依賴包完整
+- ✅ 模板文件齊全
+
+🔧 管理員賬號：
+- 訪問 /admin
+- 默認賬號：admin
+- 默認密碼：admin123
+
+📞 技術支持：
+如有問題，請檢查：
+1. 環境變量是否正確設置
+2. 密鑰是否為32位十六進制
+3. 部署日誌中的錯誤信息
+
+🎉 恭喜！您的 QR 簽到系統已準備好上傳部署！

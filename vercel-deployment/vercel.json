@@ -1,0 +1,23 @@
+{
+  "version": 2,
+  "name": "qr-checkin-system",
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "app-vercel.js"
+    }
+  ],
+  "env": {
+    "NODE_ENV": "production",
+    "PORT": "3000",
+    "DB_PATH": "./checkin.db",
+    "ADMIN_EMAIL": "admin@example.com",
+    "BCRYPT_ROUNDS": "10",
+    "SESSION_MAX_AGE": "3600000"
+  },
+  "functions": {
+    "app-vercel.js": {
+      "runtime": "vercel-node@2.0.0"
+    }
+  }
+}

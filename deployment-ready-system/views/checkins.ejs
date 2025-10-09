@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>簽到記錄 - <%= event.title %></title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <div class="container mt-4">
+    <div class="row mb-4">
+      <div class="col">
+        <h1>簽到記錄</h1>
+        <p><a href="/admin" class="btn btn-sm btn-outline-secondary">返回管理頁面</a></p>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col">
+        <div class="card shadow">
+          <div class="card-header bg-primary text-white">
+            <h3 class="card-title mb-0"><%= event.title %> - 簽到記錄</h3>
+          </div>
+          <div class="card-body">
+            <div class="mb-4">
+              <p><strong>活動描述:</strong> <%= event.description %></p>
+              <p>
+                <strong>開始時間:</strong> <%= new Date(event.start_time).toLocaleString() %><br>
+                <strong>結束時間:</strong> <%= new Date(event.end_time).toLocaleString() %>
+              </p>
+              <p><strong>總簽到人數:</strong> <%= checkins.length %> 人</p>
+              <button id="downloadCSV" class="btn btn-success">
+                <i class="bi bi-download"></i> 下載簽到記錄 (CSV)
+              </button>
+              <button id="downloadExcel" class="btn btn-primary ms-2">
+                <i class="bi bi-file-earmark-excel"></i> 下載簽到記錄 (Excel)
+              </button>
+            </div>
+
+            <% if (checkins && checkins.length > 0) { %>
+              <div class="table-responsive">
+                <table class="table table-striped table-hover">
+                  <thead>
+                    <tr>
+                      <th>#</th>
+                      <th>姓名</th>
+                      <th>機關</th>
+                      <th>單位</th>
+                      <th>職稱</th>
+                      <th>電子郵件</th>
+                      <th>身分證字號</th>
+                      <th>出生年月日</th>
+                      <th>簽到時間</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <% checkins.forEach((checkin, index) => { %>
+                      <tr>
+                        <td><%= index + 1 %></td>
+                        <td><%= checkin.name %></td>
+                        <td><%= checkin.organization || '-' %></td>
+                        <td><%= checkin.department || '-' %></td>
+                        <td><%= checkin.position || '-' %></td>
+                        <td><%= checkin.email %></td>
+                        <td><%= checkin.id_number || '-' %></td>
+                        <td><%= checkin.birth_date || '-' %></td>
+                        <td><%= new Date(checkin.checkin_time).toLocaleString() %></td>
+                      </tr>
+                    <% }); %>
+                  </tbody>
+                </table>
+              </div>
+            <% } else { %>
+              <div class="alert alert-info">
+                目前沒有簽到記錄。
+              </div>
+            <% } %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const downloadCSVBtn = document.getElementById('downloadCSV');
+      const downloadExcelBtn = document.getElementById('downloadExcel');
+      
+      // 準備CSV下載
+      downloadCSVBtn.addEventListener('click', function() {
+        // 獲取表格數據
+        const table = document.querySelector('table');
+        const rows = table.querySelectorAll('tr');
+        let csvContent = "data:text/csv;charset=utf-8,\uFEFF"; // 添加BOM以支持中文
+        
+        // 添加標題行
+        csvContent += "編號,姓名,機關,單位,職稱,電子郵件,簽到時間\n";
+        
+        // 添加數據行
+        rows.forEach(function(row, index) {
+          if (index === 0) return; // 跳過表頭
+          
+          const cells = row.querySelectorAll('td');
+          const rowData = Array.from(cells).map(cell => `"${cell.textContent.replace(/"/g, '""')}"`).join(',');
+          csvContent += rowData + '\n';
+        });
+        
+        // 創建下載鏈接
+        const encodedUri = encodeURI(csvContent);
+        const link = document.createElement("a");
+        link.setAttribute("href", encodedUri);
+        link.setAttribute("download", "<%= event.title %>_簽到記錄.csv");
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      });
+      
+      // 準備Excel下載
+      downloadExcelBtn.addEventListener('click', function() {
+        // 創建Excel工作表
+        let xlsContent = "<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:x='urn:schemas-microsoft-com:office:excel' xmlns='http://www.w3.org/TR/REC-html40'>";
+        xlsContent += "<head><!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet><x:Name><%= event.title %></x:Name><x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions></x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]--></head>";
+        xlsContent += "<body><table>";
+        
+        // 添加標題行
+        xlsContent += "<tr><th>編號</th><th>姓名</th><th>機關</th><th>單位</th><th>職稱</th><th>電子郵件</th><th>簽到時間</th></tr>";
+        
+        // 添加數據行
+        const rows = document.querySelectorAll('table tr');
+        rows.forEach(function(row, index) {
+          if (index === 0) return; // 跳過表頭
+          
+          xlsContent += "<tr>";
+          const cells = row.querySelectorAll('td');
+          cells.forEach(cell => {
+            xlsContent += `<td>${cell.textContent}</td>`;
+          });
+          xlsContent += "</tr>";
+        });
+        
+        xlsContent += "</table></body></html>";
+        
+        // 創建下載鏈接
+        const blob = new Blob([xlsContent], {type: 'application/vnd.ms-excel'});
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.setAttribute("href", url);
+        link.setAttribute("download", "<%= event.title %>_簽到記錄.xls");
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+      });
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,51 @@
+[build]
+  command = "npm install"
+  functions = "netlify/functions"
+  publish = "."
+
+[build.environment]
+  NODE_VERSION = "18"
+  NPM_VERSION = "9"
+  NODE_OPTIONS = "--max-old-space-size=4096"
+
+[functions]
+  node_bundler = "esbuild"
+  external_node_modules = ["ejs", "sqlite3"]
+
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/app/:splat"
+  status = 200
+
+[[redirects]]
+  from = "/admin/*"
+  to = "/.netlify/functions/app/admin/:splat"
+  status = 200
+
+[[redirects]]
+  from = "/events/*"
+  to = "/.netlify/functions/app/events/:splat"
+  status = 200
+
+[[redirects]]
+  from = "/checkin/*"
+  to = "/.netlify/functions/app/checkin/:splat"
+  status = 200
+
+[[redirects]]
+  from = "/*"
+  to = "/.netlify/functions/app"
+  status = 200
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-XSS-Protection = "1; mode=block"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+
+[[headers]]
+  for = "/public/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000"

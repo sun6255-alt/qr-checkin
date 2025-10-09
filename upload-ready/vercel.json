@@ -1,0 +1,10 @@
+{
+  "rewrites": [
+    { "source": "/((?!api/).*)", "destination": "/dist/index.html" }
+  ],
+  "functions": {
+    "dist/index.html": {
+      "runtime": "nodejs18.x"
+    }
+  }
+}

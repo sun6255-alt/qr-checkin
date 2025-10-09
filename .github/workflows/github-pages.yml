@@ -1,0 +1,238 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18'
+        cache: 'npm'
+    
+    - name: Install dependencies
+      run: npm ci
+    
+    - name: Build static site
+      run: |
+        # 創建靜態站點目錄
+        mkdir -p public-static
+        
+        # 複製靜態資源
+        cp -r public/* public-static/
+        
+        # 創建首頁
+        cat > public-static/index.html << 'EOF'
+        <!DOCTYPE html>
+        <html lang="zh-TW">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>QR 簽到系統</title>
+            <style>
+                * {
+                    margin: 0;
+                    padding: 0;
+                    box-sizing: border-box;
+                }
+                
+                body {
+                    font-family: 'Microsoft YaHei', 'Segoe UI', Arial, sans-serif;
+                    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                    min-height: 100vh;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                }
+                
+                .container {
+                    background: white;
+                    border-radius: 20px;
+                    padding: 40px;
+                    box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+                    text-align: center;
+                    max-width: 500px;
+                    width: 90%;
+                }
+                
+                h1 {
+                    color: #333;
+                    margin-bottom: 20px;
+                    font-size: 2.5em;
+                }
+                
+                .subtitle {
+                    color: #666;
+                    margin-bottom: 30px;
+                    font-size: 1.2em;
+                }
+                
+                .button {
+                    display: inline-block;
+                    padding: 15px 30px;
+                    margin: 10px;
+                    background: linear-gradient(45deg, #667eea, #764ba2);
+                    color: white;
+                    text-decoration: none;
+                    border-radius: 25px;
+                    font-weight: bold;
+                    transition: transform 0.3s ease;
+                }
+                
+                .button:hover {
+                    transform: translateY(-2px);
+                }
+                
+                .features {
+                    margin-top: 30px;
+                    text-align: left;
+                }
+                
+                .feature {
+                    display: flex;
+                    align-items: center;
+                    margin: 15px 0;
+                    color: #555;
+                }
+                
+                .feature::before {
+                    content: "✅";
+                    margin-right: 10px;
+                    font-size: 1.2em;
+                }
+                
+                .warning {
+                    background: #fff3cd;
+                    border: 1px solid #ffeaa7;
+                    border-radius: 10px;
+                    padding: 15px;
+                    margin-top: 20px;
+                    color: #856404;
+                }
+            </style>
+        </head>
+        <body>
+            <div class="container">
+                <h1>🎯 QR 簽到系統</h1>
+                <p class="subtitle">智能活動簽到解決方案</p>
+                
+                <div class="features">
+                    <div class="feature">快速創建活動</div>
+                    <div class="feature">生成專屬 QR 碼</div>
+                    <div class="feature">實時簽到統計</div>
+                    <div class="feature">管理員權限控制</div>
+                    <div class="feature">數據導出功能</div>
+                </div>
+                
+                <div style="margin-top: 30px;">
+                    <a href="#" class="button" onclick="alert('請使用雲平台部署以獲得完整功能')">立即使用</a>
+                    <a href="https://github.com/${{ github.repository }}" class="button" style="background: #333;">查看源碼</a>
+                </div>
+                
+                <div class="warning">
+                    <strong>⚠️ 注意：</strong><br>
+                    GitHub Pages 只支持靜態網站。要獲得完整功能（數據庫、後端 API），請使用以下平台：
+                    <br><br>
+                    🚀 <strong>推薦部署平台：</strong><br>
+                    • <a href="https://www.netlify.com" target="_blank">Netlify</a> - 免費，支持 Node.js<br>
+                    • <a href="https://vercel.com" target="_blank">Vercel</a> - 開發者友好<br>
+                    • <a href="https://render.com" target="_blank">Render</a> - 支持數據庫<br>
+                    • <a href="https://railway.app" target="_blank">Railway</a> - 簡單易用
+                </div>
+                
+                <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee; color: #999;">
+                    <small>Build with ❤️ | GitHub Pages Version</small>
+                </div>
+            </div>
+        </body>
+        </html>
+        EOF
+        
+        # 創建 README
+        cat > public-static/README.md << 'EOF'
+        # QR 簽到系統 - GitHub Pages 版本
+        
+        這是 QR 簽到系統的靜態版本，託管在 GitHub Pages 上。
+        
+        ## ⚠️ 功能限制
+        
+        由於 GitHub Pages 只支持靜態網站，以下功能無法使用：
+        
+        - ❌ 數據庫功能
+        - ❌ 用戶註冊/登錄
+        - ❌ QR 碼生成
+        - ❌ 簽到功能
+        - ❌ 管理員後台
+        
+        ## 🚀 獲取完整功能
+        
+        要獲得完整功能，請使用以下平台部署：
+        
+        ### 免費平台（推薦）
+        
+        1. **[Netlify](https://www.netlify.com)** ⭐
+           - 一鍵部署
+           - 支持 Node.js 和數據庫
+           - 免費 HTTPS
+           - 全球 CDN
+        
+        2. **[Vercel](https://vercel.com)**
+           - 開發者友好
+           - 自動部署
+           - 性能優化
+        
+        ### 部署步驟
+        
+        1. Fork 這個倉庫
+        2. 訪問 [Netlify](https://app.netlify.com)
+        3. 點擊 "New site from Git"
+        4. 選擇你的 GitHub 倉庫
+        5. 設置構建參數：
+           - Build command: `npm install`
+           - Publish directory: `.`
+        6. 點擊 "Deploy"
+        
+        ## 📚 文檔
+        
+        - [詳細部署指南](github_deployment_guide.md)
+        - [使用說明](user_guide.md)
+        - [系統架構](README.md)
+        
+        ## 🔧 技術支持
+        
+        如有問題，請在 GitHub Issues 中提問。
+        
+        ---
+        
+        **🎯 立即開始：** 點擊上面的部署平台鏈接，幾分鐘內即可擁有功能完整的 QR 簽到系統！
+        EOF
+    
+    - name: Deploy to GitHub Pages
+      uses: peaceiris/actions-gh-pages@v3
+      if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: ./public-static
+        publish_branch: gh-pages
+        
+    - name: Comment deployment URL
+      if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
+      uses: actions/github-script@v6
+      with:
+        script: |
+          const url = `https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}`;
+          github.rest.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: `🎉 **部署成功！**\n\n📱 訪問地址：${url}\n\n⚠️ **注意：** 這是靜態版本，功能有限。\n🚀 **獲取完整功能：** 使用 [Netlify](https://app.netlify.com) 或 [Vercel](https://vercel.com) 部署。`
+          });
