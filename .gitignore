@@ -5,6 +5,9 @@ yarn-debug.log*
 yarn-error.log*
 lerna-debug.log*
 
+upload-ready.zip
+掃碼簽到系統開發.rar
+
 # 環境變量
 .env
 .env.local
