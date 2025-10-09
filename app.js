@@ -46,7 +46,7 @@ app.use((req, res, next) => {
   res.locals.error_msg = req.flash('error_msg');
   res.locals.admin = req.session.admin || null;
   next();
-});
+
 
 // 初始化數據庫 - 支持環境變量配置
 const dbPath = process.env.DB_PATH ? path.resolve(process.env.DB_PATH) : path.join(__dirname, 'checkin.db');
@@ -1846,5 +1846,3 @@ app.use((err, req, res, next) => {
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`服務器運行在 http://localhost:${PORT}`);
-
-});
